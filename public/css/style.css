@@ -1,0 +1,32 @@
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}
+
+.activeItem {
+    border-bottom: 2px solid black;
+}
+
+.textShadow {
+    text-shadow: 3px 3px rgb(81, 75, 87);
+}
+
+.logo {
+    text-shadow: 1.5px -0.5px rgb(81, 75, 87);
+    
+}
+
+/* .horizontal-scrollable > .row {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.horizontal-scrollable > .row > .child {
+    display: inline-block;
+    float: none;
+} */
+/* .horizontal-scrollable {
+    overflow: auto;
+    white-space: nowrap;
+} */
