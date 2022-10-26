@@ -31,7 +31,8 @@
                         </button>
                     </div>
                 </form>
-                <form class="d-flex">
+                <form action="{{ route('cart.list') }}" class="d-flex" method="GET">
+                    @csrf
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
@@ -78,72 +79,73 @@
         </div>
     </nav>
 
-    <!-- Product section-->
-    <section class="py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="row gx-4 gx-lg-5 align-items-center">
-                <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{ url('/images/'.$book->image) }}" alt="..." /></div>
-                <div class="col-md-6">
-                    <h1 class="display-5 fw-bolder">{{ $book->name }}</h1>
-                    <div class="fs-5 mb-5 pt-3">
-                        <span class="">{{ $book->price }} (ကျပ်)</span>
-                    </div>
-                    <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium at dolorem quidem modi. Nam sequi consequatur obcaecati excepturi alias magni, accusamus eius blanditiis delectus ipsam minima ea iste laborum vero?</p>
-                    <div class="d-flex">
-                        <input type="number" class="shadow-none form-control text-center me-3" id="inputQuantity" value="1" style="max-width: 4rem" min="1">
-                        <button class="btn btn-outline-dark flex-shrink-0" type="button">
-                            <i class="bi-cart-fill me-1"></i>
-                            Add to cart
-                        </button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card my-5">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>quantity</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
             </div>
         </div>
-    </section>
-    <!-- Related items section-->
-    <section class="py-5 bg-light">
-        <div class="container px-4 px-lg-5 mt-5">
-            <h2 class="fw-bolder mb-4">Related products</h2>
-            {{--  --}}
-            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4  d-flex flex-row flex-nowrap  overflow-auto">
-                @foreach ($books as $book)
-                    <div class="col mb-5">                        
-                        <div class="card h-100">
-                            <!-- Product image-->
-                            <img class="card-img-top" src="{{ url('/images/'.$book->image) }}" alt="..." />
-                            <!-- Product details-->
-                            <div class="card-body p-4">
-                                <div class="text-center">
-                                    <!-- Product name-->
-                                    <h5 class="fw-bolder">{{ $book->name }}</h5>
-                                    <!-- Product price-->
-                                    {{ $book->price }} (ကျပ်)
-                                </div>
-                            </div>
-                            <!-- Product actions-->
-                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                <div class="text-center">
-                                    <a class="btn btn-outline-dark mt-auto" href="#">
-                                        Add to cart
-                                        <i class="bi-cart-fill"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-        
+    </div>
 @endsection
 
 @section('script')
+
     <script>
+        // For logout
         function submitForm(){
             if(confirm('Are you sure you want to logout?')){
                 document.getElementById('logout-form').submit();
             }
         }
+
+        // For Table
+
+        // ======= Axios ======
+        
+        const i = 1;
+        axios.get('/api/carts')
+             .then( response => {
+                 response.data.forEach( item => {
+                     tableBody.innerHTML += `
+                     <tr class="tableData" style="height: 100px">
+                        <td>${i}</td>
+                        <td class="titleList">` + `<img src="${item.image}" style="height: 100px">` + `</td>
+                        <td class="descList">${item.name}</td>
+                        <td class="descList">` + `<input type="number" class="shadow-none form-control text-center me-3" id="inputQuantity" value="${item.quantity}" style="max-width: 4rem" min="1" ">` + `</td>
+                        <td class="descList">${item.price}</td>
+                        <td>                           
+                            
+                            <button class="btn btn-danger btn-sm" onclick="deleteBtn(${item.id})">Clear</button>
+                            </td>
+                            </tr>
+                            `
+                            i++;
+                })
+             } )
+             .catch( error => console.log(error) );
+             
+            
+        
     </script>
+    
 @endsection

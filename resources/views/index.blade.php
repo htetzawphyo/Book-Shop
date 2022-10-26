@@ -31,7 +31,8 @@
                         </button>
                     </div>
                 </form>
-                <form class="d-flex">
+                <form action="/cart-detail" class="d-flex" method="GET">
+                    @csrf
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
@@ -130,11 +131,21 @@
                             <!-- Product actions-->
                             <div class="card-footer pt-0 border-top-0 bg-transparent">
                                 <div class="">
-                                    <a class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0" href="#">
+                                    <form name="cartForm">
+                                        <input type="hidden" value="{{ Auth::user()->id }}" name="userId">
+                                        <input type="hidden" value="{{ $book->id }}" name="bookId">
+                                        <input type="hidden" value="{{ $book->name }}" name="name">
+                                        <input type="hidden" value="{{ $book->price }}" name="price">
+                                        <input type="hidden" value="{{ url('/images/'.$book->image) }}"  name="image">
+                                        <input type="hidden" value="1" name="quantity">
+                                        <button id="btn" class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0">Add To Cart <i class="bi-cart-fill"></i></button>
+                                        <a href="/books/detail/{{$book->id}}" class="btn btn-outline-dark btn-sm">View >></a>
+                                    </form>
+                                    {{-- action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data"
+                                        <a class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0" href="#">
                                         Add to cart
                                         <i class="bi-cart-fill"></i>
-                                    </a>
-                                    <a href="/books/detail/{{$book->id}}" class="btn btn-outline-dark btn-sm">View >></a>
+                                    </a> --}}
                                 </div>
                             </div>
                         </div>
@@ -149,10 +160,44 @@
 
 @section('script')
     <script>
+        // For logout
         function submitForm(){
             if(confirm('Are you sure you want to logout?')){
                 document.getElementById('logout-form').submit();
             }
         }
+
+        // =========== For Cart ===========
+
+        // axios Create
+
+        const cartForm = document.forms['cartForm'];
+        const userIdData = cartForm['userId'];
+        const bookIdData = cartForm['bookId'];
+        const nameData = cartForm['name'];
+        const priceData = cartForm['price'];
+        const imageData = cartForm['image'];
+        const quantityData = cartForm['quantity'];
+
+        cartForm.onsubmit = function(e){
+            e.preventDefault();
+
+            axios.post('/api/carts', {
+                    userId: userIdData.value,
+                    bookId: bookIdData.value,
+                    name: nameData.value,
+                    price: priceData.value,
+                    image: imageData.value,
+                    quantity: quantityData.value
+                })
+                 .then( res => {
+                    console.log(res);
+                 })
+                 .catch( err => {
+                    console.log(err.response);
+                 })
+        }
     </script>
+
+
 @endsection

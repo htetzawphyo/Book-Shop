@@ -42,4 +42,10 @@ class MenuController extends Controller
         $authors = Author::all();
         return view('home.book', compact('authors', 'book', 'books'));
     }
+
+    public function cartDetail()
+    {
+        $authors = Author::all();
+        return view('home.cartDetail', compact('authors'));
+    }
 }
