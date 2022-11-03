@@ -35,11 +35,12 @@
                         </button>
                     </div>
                 </form>
-                <form class="d-flex">
+                <form action="{{ route('cart.list') }}" class="d-flex" method="GET">
+                    @csrf
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">{{ Cart::getTotalQuantity(); }}</span>
                     </button>
                 </form>
 
@@ -103,11 +104,16 @@
                             <!-- Product actions-->
                             <div class="card-footer pt-0 border-top-0 bg-transparent">
                                 <div class="">
-                                    <a class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0" href="#">
-                                        Add to cart
-                                        <i class="bi-cart-fill"></i>
-                                    </a>
-                                    <a href="/books/detail/{{$value->id}}" class="btn btn-outline-dark btn-sm">View >></a>
+                                    <form action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="hidden" value="{{ $value->id }}" name="bookId">
+                                        <input type="hidden" value="{{ $value->name }}" name="name">
+                                        <input type="hidden" value="{{ $value->price }}" name="price">
+                                        <input type="hidden" value="{{ url('/images/'.$value->image) }}"  name="image">
+                                        <input type="hidden" value="1" name="quantity">
+                                        <button id="btn" class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0">Add To Cart <i class="bi-cart-fill"></i></button>
+                                        <a href="/books/detail/{{$value->id}}" class="btn btn-outline-dark btn-sm">View >></a>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -118,4 +124,10 @@
         </div>
     </section>
         
+@endsection
+
+@section('footer')
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Book Shop 2022</p></div>
+    </footer>
 @endsection

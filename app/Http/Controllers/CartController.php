@@ -27,13 +27,14 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
+        $userId = Auth::user()->id;
         $cart = Cart::create([
             'book_id' => $request->bookId,
             'name' => $request->name,
             'price' => $request->price,
             'image' => $request->image,
             'quantity' => $request->quantity,
-            'user_id' => $request->userId,            
+            'user_id' => $userId,            
         ]);
 
         return response()->json($cart, 200);

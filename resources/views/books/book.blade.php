@@ -42,6 +42,7 @@
       var table = $('.books-table').DataTable({
           ordering: false,
           info: false,
+          scrollX: true,
           lengthMenu: [6],
           lengthChange: false,
           processing: true,

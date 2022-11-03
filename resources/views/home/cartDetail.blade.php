@@ -22,26 +22,19 @@
 
                     <li class="nav-item"><a class="nav-link" href="{{ route('about') }}">About</a></li>
                 </ul>
-                {{-- Search Form --}}
-                <form action="{{ route('index') }}" method="GET" class="mb-2 mb-md-0">
-                    <div class="input-group">
-                        <input type="search" id="form1" class="form-control shadow-none" name="query" placeholder="Search here......">
-                        <button type="submit" class="btn btn-dark me-2">
-                        <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </form>
-                <form action="{{ route('cart.list') }}" class="d-flex" method="GET">
+
+                {{-- Cart total quantity --}}
+                <form action="{{ route('cart.list') }}" class="d-flex me-3" method="GET">
                     @csrf
-                    <button class="btn btn-outline-dark" type="submit">
+                    <button class="btn btn-outline-dark p-1" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">{{ Cart::getTotalQuantity(); }}</span>
                     </button>
                 </form>
 
                 {{-- login, logout --}}
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav">
                     <!-- Authentication Links -->
                     @guest
                         @if (Route::has('login'))
@@ -97,7 +90,59 @@
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
-
+                                <?php 
+                                    $i = 1;
+                                ?>
+                                @foreach ($cartItems as $item)
+                                    <tr>
+                                        <td>{{ $i; }}</td>
+                                        <td><img src="{{$item->attributes->image}}" style="height: 100px"></td>
+                                        <td>{{ $item->name }}</td>
+                                        <td>
+                                            <form action="{{ route('cart.update') }}" method="POST" name="submit">
+                                                @csrf
+                                                <input type="hidden" name="id" value="{{ $item->id}}" >
+                                                <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" style="max-width: 4rem"
+                                                     class="shadow-none form-control text-center me-3" onchange="autoSubmit()" readonly>
+                                            </form>
+                                        </td>
+                                        <td id="total">{{ $item->quantity * $item->price }}</td>
+                                        <td>
+                                            <form action="{{ route('cart.remove') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" value="{{ $item->id }}" name="id">
+                                                <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Clear  </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php 
+                                        $i++;
+                                    ?>
+                                @endforeach
+                                <tr>
+                                    <th scope="row"></th>
+                                    <td colspan="2" class="text-center fw-bold">Total</td>
+                                    <td class="fw-bold">{{ Cart::getTotalQuantity(); }}</td>
+                                    <td class="fw-bold">{{ Cart::getSubTotal() }}</td>
+                                    <td>
+                                        <form action="{{ route('cart.clear') }}" method="POST">
+                                            @csrf
+                                            <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Clear All</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2">
+                                        <form action="{{ route('order') }}" method="POST">
+                                            @csrf
+                                            <button class="btn btn-dark" type="submit">Order Now >> <i class="bi-cart-fill me-1"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -118,33 +163,9 @@
             }
         }
 
-        // For Table
-
-        // ======= Axios ======
-        
-        const i = 1;
-        axios.get('/api/carts')
-             .then( response => {
-                 response.data.forEach( item => {
-                     tableBody.innerHTML += `
-                     <tr class="tableData" style="height: 100px">
-                        <td>${i}</td>
-                        <td class="titleList">` + `<img src="${item.image}" style="height: 100px">` + `</td>
-                        <td class="descList">${item.name}</td>
-                        <td class="descList">` + `<input type="number" class="shadow-none form-control text-center me-3" id="inputQuantity" value="${item.quantity}" style="max-width: 4rem" min="1" ">` + `</td>
-                        <td class="descList">${item.price}</td>
-                        <td>                           
-                            
-                            <button class="btn btn-danger btn-sm" onclick="deleteBtn(${item.id})">Clear</button>
-                            </td>
-                            </tr>
-                            `
-                            i++;
-                })
-             } )
-             .catch( error => console.log(error) );
-             
-            
+        function autoSubmit(){
+            document.forms['submit'].submit();
+        }      
         
     </script>
     

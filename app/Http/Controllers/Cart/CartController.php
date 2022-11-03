@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Cart;
 
+use App\Models\Book;
+use App\Models\Author;
 use Darryldecode\Cart\Cart;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -11,38 +13,72 @@ class CartController extends Controller
 {
     public function cartList()
     {
-        // $cartItems = \Cart::getContent();
-        $userId = Auth::user()->id; // or any string represents user identifier
-        $cartItems = \Cart::session($userId)->getContent();
-        dd($cartItems);
-        return view('cart', compact('cartItems'));
+        $authors = Author::all();
+        $cartItems = \Cart::getContent();
+
+        if(\Cart::isEmpty()){
+            return back();
+        } else {
+            return view('home.cartDetail', compact('cartItems', 'authors'));
+        }
     }
 
     public function addToCart(Request $request)
     {
-        // \Cart::add([
-        //     'id' => $request->id,
-        //     'name' => $request->name,
-        //     'price' => $request->price,
-        //     'quantity' => $request->quantity,
-        //     'attributes' => array(
-        //         'image' => $request->image,
-        //     )
-        // ]);
-        // session()->flash('success', 'Product is Added to Cart Successfully !');
+        $books = Book::find($request->bookId);
+        if($request->quantity > $books->quantity){
+            return back()->with('msg', 'လူကြီးမင်း မှာယူမည့် စာအုပ်အရေအတွက်သည် ကျွန်ုပ်တို့စီ၌ ရှိထားသော စာအုပ်အရေအတွက်ထက် များနေပါသည်။');
+        } else {
+            \Cart::add([
+                'id' => $request->bookId,
+                'name' => $request->name,
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+                'attributes' => [
+                    'image' => $request->image,
+                ]
+            ]);
 
-        // return back();
+            return back();
+        }        
+    }
 
-        $userId = Auth::user()->id; // or any string represents user identifier
-        \Cart::session($userId)->add([
-            'id' => $request->id, // inique row ID
-            'name' => $request->name,
-            'price' => $request->price,
-            'quantity' => $request->quantity,
-            'attributes' => [
-                'image' => $request->image,
+    public function updateCart(Request $request)
+    {
+        \Cart::update(
+            $request->id,
+            [
+                'quantity' => [
+                    'relative' => false,
+                    'value' => $request->quantity
+                ],
             ]
-        ]);
-        return back();
+        );
+
+        return redirect()->route('cart.list');
+    }
+
+    public function removeCart(Request $request)
+    {
+        \Cart::remove($request->id);
+
+        if(\Cart::isEmpty()){
+            return redirect('/');
+        } else {
+            return redirect()->route('cart.list');
+        }
+    }
+
+    public function clearAllCart()
+    {
+        \Cart::clear();
+
+        session()->flash('success', 'All Item Cart Clear Successfully !');
+
+        if(\Cart::isEmpty()){
+            return redirect('/');
+        } else {
+            return redirect()->route('cart.list');
+        }
     }
 }

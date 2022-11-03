@@ -9,6 +9,7 @@ use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\DatatablesController;
 use App\Http\Controllers\Menu\MenuController;
+use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\User\UserController;
 
 Auth::routes();
@@ -33,6 +34,8 @@ Route::group(['middleware' => 'auth' ], function() {
         Route::post('/remove', 'removeCart')->name('cart.remove');
         Route::post('clear', 'clearAllCart')->name('cart.clear');
     });
+
+    Route::post('/order', [OrderController::class, 'order'])->name('order');
     
 });
     

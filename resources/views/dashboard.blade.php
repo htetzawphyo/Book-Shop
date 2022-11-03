@@ -40,10 +40,10 @@
 		<div class="col">
 			<div class="card mb-3">
 				<div class="card-body">
-					<h3 class="card-title h2">102,250</h3>
+					<h3 class="card-title h2">{{ DB::table('orders')->sum('quantity') }}</h3>
 					<span class="text-success">
 						<i class="fas fa-chart-line"></i>
-						Yearly visitors
+						Total Order Quantity
 					</span>
 				</div>
 			</div>
@@ -53,86 +53,69 @@
 	<!-- Location & Data Blocks -->
 	<div class="row mt-4 flex-column flex-lg-row">						
 		<div class="col">
-			<h2 class="h6 text-dark-50">LOCATION</h2>
+			<h2 class="h6 text-dark-50">Best Seller Books</h2>
 
-			<div class="card mb-3" style="height: 280px">
+			<div class="card mb-3">
 				<div class="card-body">
-					<small class="text-muted">Regional</small>
-					<div class="progress mb-4 mt-2" style="height: 5px">
-						<div class="progress-bar bg-success w-25"></div>
-					</div>
-					<small class="text-muted">Global</small>
-					<div class="progress mb-4 mt-2" style="height: 5px">
-						<div class="progress-bar bg-primary w-75"></div>
-					</div>
-					<small class="text-muted">Local</small>
-					<div class="progress mb-4 mt-2" style="height: 5px">
-						<div class="progress-bar bg-warning w-50"></div>
-					</div>
-					<small class="text-muted">Internal</small>
-					<div class="progress mb-4 mt-2" style="height: 5px">
-						<div class="progress-bar bg-danger w-25"></div>
-					</div>
+					<table class="table ">
+						<thead>
+							<tr>
+								<th>No</th>
+								<th>Book Name</th>
+								<th>Author Name</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
+								$i = 1;
+							?>
+							@foreach ($datas as $value)
+								<tr>
+									<td>{{ $i }}</td>
+									<td>{{ $value->book->name }}</td>
+									<td>{{ $value->book->author->name }}</td>
+								</tr>
+
+								<?php 
+									$i++;
+								?>
+							@endforeach
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
 
 		<div class="col">
-		<h2 class="h6 text-dark-50">DATA</h2>
+		<h2 class="h6 text-dark-50">Gold Members</h2>
 
-		<div class="card mb-3" style="height: 280px">
-			<div class="card-body">
-				<div class="text-right">
-					<button class="btn btn-sm btn-outline-secondary">
-						<i class="fas fa-search"></i>
-					</button>
-					<button class="btn btn-sm btn-outline-secondary">
-						<i class="fas fa-sort-amount-up"></i>
-					</button>
-					<button class="btn btn-sm btn-outline-secondary">
-						<i class="fas fa-filter"></i>
-					</button>
-				</div>
+		<div class="card mb-3">
+			{{-- table-wrapper-scroll-y my-custom-scrollbar --}}
+			<div class="card-body col-xs-8 col-xs-offset-2 well">
+				<table class="table table-scroll">
+					<thead class="">
+						<tr>
+							<th>No</th>
+							<th>User Name</th>
+							<th>Price</th>
+						</tr>
+					</thead>
+					<tbody class="custom-body">
+						<?php 
+							$i = 1;
+						?>
+						@foreach ($goldUsers as $value)
+							<tr>
+								<td>{{ $i }}</td>
+								<td>{{ $value->user->name }}</td>
+								<td>{{ $value->price }}</td>
+							</tr>
 
-				<table class="table">
-					<tr>
-						<th>ID</th>
-						<th>Age Group</th>
-						<th>Data</th>
-						<th>Progress</th>
-					</tr>
-					<tr>
-						<td>1</td>
-						<td>20-30</td>
-						<td>19%</td>
-						<td>
-							<i class="fas fa-chart-pie"></i>
-						</td>
-					</tr>
-					<tr>
-						<td>2</td>
-						<td>30-40</td>
-						<td>40%</td>
-						<td>
-							<i class="fas fa-chart-bar"></i>
-						</td>
-					</tr>
-					<tr>
-						<td>3</td>
-						<td>40-50</td>
-						<td>20%</td>
-						<td>
-							<i class="fas fa-chart-line"></i>
-						</td>
-					</tr>
-					<tr>
-						<td>4</td>
-						<td>50</td>
-						<td>11%</td>
-						<td>
-							<i class="fas fa-chart-pie"></i>
-						</td>
-					</tr>
+							<?php 
+								$i++;
+							?>
+						@endforeach
+					</tbody>
 				</table>
 			</div>
 		</div>

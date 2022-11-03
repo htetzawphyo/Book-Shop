@@ -31,11 +31,12 @@
                         </button>
                     </div>
                 </form>
-                <form class="d-flex">
+                <form action="{{ route('cart.list') }}" class="d-flex" method="GET">
+                    @csrf
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">{{ Cart::getTotalQuantity(); }}</span>
                     </button>
                 </form>
 
@@ -85,16 +86,30 @@
                 <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{ url('/images/'.$book->image) }}" alt="..." /></div>
                 <div class="col-md-6">
                     <h1 class="display-5 fw-bolder">{{ $book->name }}</h1>
-                    <div class="fs-5 mb-5 pt-3">
+                    <div class="fs-5 mb-1 pt-3">
                         <span class="">{{ $book->price }} (ကျပ်)</span>
                     </div>
-                    <p class="lead">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium at dolorem quidem modi. Nam sequi consequatur obcaecati excepturi alias magni, accusamus eius blanditiis delectus ipsam minima ea iste laborum vero?</p>
-                    <div class="d-flex">
-                        <input type="number" class="shadow-none form-control text-center me-3" id="inputQuantity" value="1" style="max-width: 4rem" min="1">
-                        <button class="btn btn-outline-dark flex-shrink-0" type="button">
-                            <i class="bi-cart-fill me-1"></i>
-                            Add to cart
-                        </button>
+                    
+                    <div class="text-success mb-5">
+                        {{ $book->quantity }} in stock
+                    </div>
+                    @if (Session::has('msg'))
+                        <div class="alert alert-danger mb-4">
+                            {{ Session::get('msg') }}
+                        </div>
+                    @endif
+
+                    <div class="card-footer pt-0 border-top-0 bg-transparent d-flex">
+                        <form action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" value="{{ $book->id }}" name="bookId">
+                            <input type="hidden" value="{{ $book->name }}" name="name">
+                            <input type="hidden" value="{{ $book->price }}" name="price">
+                            <input type="hidden" value="{{ url('/images/'.$book->image) }}"  name="image">
+                            <input type="hidden" value="1" >
+                            <input type="number" class="shadow-none form-control text-center me-3 d-inline" id="inputQuantity" value="1" style="max-width: 4rem" min="1" name="quantity">
+                            <button class="btn btn-outline-dark flex-shrink-0">Add To Cart <i class="bi-cart-fill"></i></button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -123,10 +138,15 @@
                             <!-- Product actions-->
                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                 <div class="text-center">
-                                    <a class="btn btn-outline-dark mt-auto" href="#">
-                                        Add to cart
-                                        <i class="bi-cart-fill"></i>
-                                    </a>
+                                    <form action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="hidden" value="{{ $book->id }}" name="bookId">
+                                        <input type="hidden" value="{{ $book->name }}" name="name">
+                                        <input type="hidden" value="{{ $book->price }}" name="price">
+                                        <input type="hidden" value="{{ url('/images/'.$book->image) }}"  name="image">
+                                        <input type="hidden" value="1" name="quantity">
+                                        <button id="btn" class="btn btn-outline-dark mt-auto">Add To Cart <i class="bi-cart-fill"></i></button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -136,6 +156,12 @@
         </div>
     </section>
         
+@endsection
+
+@section('footer')
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Book Shop 2022</p></div>
+    </footer>
 @endsection
 
 @section('script')

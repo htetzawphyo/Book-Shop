@@ -1,6 +1,6 @@
 @extends('home.master')
 
-@section('title', 'About')
+@section('title', 'Book Shop')
 
 @section('content')
 
@@ -24,11 +24,12 @@
 
                     <li class="nav-item"><a class="nav-link {{Request::segment(1) == 'about' ? 'activeItem' : ''}}" href="{{ route('about') }}">About</a></li>
                 </ul>
-                <form class="d-flex">
+                <form action="{{ route('cart.list') }}" class="d-flex" method="GET">
+                    @csrf
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">{{ Cart::getTotalQuantity(); }}</span>
                     </button>
                 </form>
             </div>
@@ -56,4 +57,10 @@
             </p>
         </div>
     </div>
+@endsection
+
+@section('footer')
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Book Shop 2022</p></div>
+    </footer>
 @endsection

@@ -31,12 +31,12 @@
                         </button>
                     </div>
                 </form>
-                <form action="/cart-detail" class="d-flex" method="GET">
+                <form action="{{ route('cart.list') }}" class="d-flex" method="GET">
                     @csrf
                     <button class="btn btn-outline-dark" type="submit">
                         <i class="bi-cart-fill me-1"></i>
                         Cart
-                        <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                        <span class="badge bg-dark text-white ms-1 rounded-pill">{{ Cart::getTotalQuantity(); }}</span>
                     </button>
                 </form>
 
@@ -78,9 +78,14 @@
             </div>
         </div>
     </nav>
+    @if (session('message'))
+        <div class="alert alert-success" role="alert">
+            {{ session('message') }}
+        </div>
+    @endif
 
     <!-- Header-->
-    <header class="bg-dark py-3 shadow-lg">
+    <header class="bg-dark py-3 shadow-lg"> 
         <div class="container px-4 px-lg-5">
             <div class="text-center text-white pb-3 fst-italic text-opacity-75 textShadow">
                 <h1 class="display-4 fw-bolder">အရောင်းရဆုံး စာအုပ်</h1>
@@ -88,15 +93,11 @@
             <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
 
                 <div class="carousel-inner">
-                    <div class="carousel-item active text-center">
-                    <img src="{{ url('/testImg/one.png') }}" class="h-25" alt="...">
-                    </div>
-                    <div class="carousel-item text-center">
-                    <img src="{{ url('/testImg/two.png') }}" class="h-25" alt="...">
-                    </div>
-                    <div class="carousel-item text-center">
-                    <img src="{{ url('/testImg/three.png') }}" class="h-25" alt="...">
-                    </div>
+                    @foreach ($items as $key => $item)    
+                        <div class=" carousel-item {{$key == 0 ? 'active' : '' }} text-center" >
+                            <img src="{{ url('/images/'.$item->book->image) }}" class="h-25" alt="...">
+                        </div>
+                    @endforeach
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -131,8 +132,8 @@
                             <!-- Product actions-->
                             <div class="card-footer pt-0 border-top-0 bg-transparent">
                                 <div class="">
-                                    <form name="cartForm">
-                                        <input type="hidden" value="{{ Auth::user()->id }}" name="userId">
+                                    <form action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
                                         <input type="hidden" value="{{ $book->id }}" name="bookId">
                                         <input type="hidden" value="{{ $book->name }}" name="name">
                                         <input type="hidden" value="{{ $book->price }}" name="price">
@@ -141,11 +142,6 @@
                                         <button id="btn" class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0">Add To Cart <i class="bi-cart-fill"></i></button>
                                         <a href="/books/detail/{{$book->id}}" class="btn btn-outline-dark btn-sm">View >></a>
                                     </form>
-                                    {{-- action="{{ route('cart.store') }}" method="POST" enctype="multipart/form-data"
-                                        <a class="btn btn-outline-dark mt-auto btn-sm mb-1 mb-md-0" href="#">
-                                        Add to cart
-                                        <i class="bi-cart-fill"></i>
-                                    </a> --}}
                                 </div>
                             </div>
                         </div>
@@ -158,6 +154,12 @@
         
 @endsection
 
+@section('footer')
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Book Shop 2022</p></div>
+    </footer>
+@endsection
+
 @section('script')
     <script>
         // For logout
@@ -167,36 +169,25 @@
             }
         }
 
-        // =========== For Cart ===========
+        // Success Message
+        @if (session('success'))
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
 
-        // axios Create
-
-        const cartForm = document.forms['cartForm'];
-        const userIdData = cartForm['userId'];
-        const bookIdData = cartForm['bookId'];
-        const nameData = cartForm['name'];
-        const priceData = cartForm['price'];
-        const imageData = cartForm['image'];
-        const quantityData = cartForm['quantity'];
-
-        cartForm.onsubmit = function(e){
-            e.preventDefault();
-
-            axios.post('/api/carts', {
-                    userId: userIdData.value,
-                    bookId: bookIdData.value,
-                    name: nameData.value,
-                    price: priceData.value,
-                    image: imageData.value,
-                    quantity: quantityData.value
-                })
-                 .then( res => {
-                    console.log(res);
-                 })
-                 .catch( err => {
-                    console.log(err.response);
-                 })
-        }
+        Toast.fire({
+            icon: 'success',
+            title: '{{ session('success') }}'
+        });
+        @endif
     </script>
 
 
