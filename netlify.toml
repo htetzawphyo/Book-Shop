@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "composer install"
   publish = "/build"
   base ="/"
 
@@ -7,3 +7,4 @@
   from = "/*"
   to = "/index.html"
   status = 200
+  
